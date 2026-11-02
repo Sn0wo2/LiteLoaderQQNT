@@ -15,8 +15,9 @@ function init() {
     document.querySelector(".setting-tab").addEventListener("click", event => {
         const nav_item = event.target.closest(".nav-item");
         if (nav_item) {
+            const is_liteloader = nav_item.parentElement.classList.contains("liteloader");
             // 内容显示
-            if (nav_item.parentElement.classList.contains("liteloader")) {
+            if (is_liteloader) {
                 setting_view.style.display = "none";
                 liteloader_setting_view.style.display = "block";
             }
@@ -24,8 +25,12 @@ function init() {
                 setting_view.style.display = "block";
                 liteloader_setting_view.style.display = "none";
             }
+            // QQ 原生导航项的标题由 QQ 自身维护，手动写入会与 Vue 的补丁互相竞争导致标题重复
+            if (is_liteloader) {
+                const title_text = setting_title.childNodes[1];
+                if (title_text) title_text.textContent = nav_item.querySelector(".name").textContent;
+            }
             // 重新设定激活状态
-            setting_title.childNodes[1].textContent = nav_item.querySelector(".name").textContent;
             document.querySelectorAll(".setting-tab .nav-item").forEach(element => {
                 element.classList.remove("nav-item-active");
             });
